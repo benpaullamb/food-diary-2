@@ -1,20 +1,69 @@
-# food-diary-2
+# Food Diary 2.0
 
-## Build Setup
+![status: in progress](https://img.shields.io/badge/status-in--progress-green)
 
-```bash
-# install dependencies
-$ npm install
+## About this Project
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+A full-stack, upgraded, live version of Food Diary 1.0
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+### Built with
 
-# generate static project
-$ npm run generate
+- Nuxt.js
+- AWS Cognito
+- AWS Dynamo
+- AWS Lambda
+
+## Getting Started
+
+### Prerequisites
+
+- Node
+
+### Installation
+
+1. Install the dependencies.
+
+```
+npm i
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+2. Run the app locally with hot reloading.
+
+```
+npm run dev
+```
+
+Go to http://localhost:3000
+
+## Deployment
+
+This project is hosted on GitHub pages.
+
+1. Build the static pages.
+
+```
+npm run generate
+```
+
+2. Commit to the GitHub repo that has GitHub pages setup for the `/docs` directory.
+
+```
+git push
+```
+
+See usage
+
+## Usage
+
+TBD
+
+## Roadmap
+
+- [ ] Lamb Sign-in System (AWS Cognito)
+- [ ] Paste OCR ingredients text which is then separated
+- [ ] Store food diary in Dynamo (via Lambda?)
+
+## Release History
+
+- v0.1.0
+  - Cognito user pool setup
