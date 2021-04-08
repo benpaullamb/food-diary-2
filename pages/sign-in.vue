@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { auth, getUser } from '~/plugins/cognito';
+import { auth } from '~/plugins/cognito';
 
 export default {
   data() {
@@ -34,14 +34,9 @@ export default {
 
   methods: {
     async signIn() {
-      const authTokens = await auth(this.username, this.password);
-      if (!authTokens) {
-        return console.log('Invalid username/password or something went wrong');
-      }
-
-      const user = await getUser(authTokens.AccessToken);
-      this.$store.commit('setUser', user);
-      this.$router.push('/');
+      console.log('authing');
+      const authRes = await auth(this.username, this.password);
+      console.log('authRes', authRes);
     },
   },
 };

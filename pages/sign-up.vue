@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { signUp, verify } from '~/plugins/cognito';
+import { signUp, confirmRegistration, auth } from '~/plugins/cognito';
 
 export default {
   data() {
@@ -38,26 +38,27 @@ export default {
       username: '',
       password: '',
       code: '',
-      isPendingVerification: false
+      isPendingVerification: false,
     };
   },
   methods: {
     async signUp() {
-      if(!this.username || !this.password) {
+      if (!this.username || !this.password) {
         return;
       }
 
       const res = await signUp(this.username, this.password);
       console.log('sign-up', res);
+      this.isPendingVerification = true;
     },
 
     async verify() {
-      if(!this.code) {
+      if (!this.code) {
         return;
       }
 
-      const res = await verify(this.username, this.code);
-      console.log('verify', res);
+      const res = await confirmRegistration(this.username, this.code);
+      console.log('confirm registration', res);
 
       this.signIn();
     },
@@ -71,8 +72,8 @@ export default {
       const user = await getUser(authTokens.AccessToken);
       this.$store.commit('setUser', user);
       this.$router.push('/');
-    }
-  }
+    },
+  },
 };
 </script>
 

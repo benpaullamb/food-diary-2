@@ -1,133 +1,164 @@
+import { CognitoUserPool, CognitoUserAttribute, CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import AWS from 'aws-sdk';
-import jwt from 'jsonwebtoken';
-import { DateTime } from 'luxon';
 
-AWS.config.update({ region: 'eu-west-1' });
-const cognito = new AWS.CognitoIdentityServiceProvider();
-const clientId = '536bq7ndl0p9qjh3qjp426lhkf';
+export const region = 'eu-west-1';
+export const userPoolId = 'eu-west-1_AbAUtX5Sa';
+export const clientId = '536bq7ndl0p9qjh3qjp426lhkf';
+export const identityPoolId = 'eu-west-1:82628243-e7e1-489f-a941-ea07ca1117d0';
 
-export const signUp = async (username, password) => {
-  try {
-    const signUpRes = await cognito
-      .signUp({
-        ClientId: clientId,
-        Username: username,
-        Password: password,
-        UserAttributes: [
-          {
-            Name: 'email',
-            Value: username,
-          },
-        ],
-      })
-      .promise();
-    console.log(signUpRes);
-    return signUpRes;
-  } catch (err) {
-    console.warn(err);
-  }
+export const userPool = new CognitoUserPool({
+  UserPoolId: userPoolId,
+  ClientId: clientId,
+});
+
+export const signUp = async (email, password, name) => {
+  const attributes = [
+    new CognitoUserAttribute({
+      Name: 'email',
+      Value: email,
+    }),
+    new CognitoUserAttribute({
+      Name: 'name',
+      Value: name,
+    }),
+  ];
+
+  return new Promise((res, rej) => {
+    userPool.signUp(email, password, attributes, null, (err, result) => {
+      if (err) {
+        console.warn(err);
+        return rej(err);
+      }
+      console.log('Signed up user', result.user);
+      return res(result);
+    });
+  });
 };
 
-export const verify = async (username, code) => {
-  try {
-    const verifyRes = await cognito
-      .confirmSignUp({
-        ClientId: clientId,
-        Username: username,
-        ConfirmationCode: code,
-      })
-      .promise();
-    console.log(verifyRes);
-    return verifyRes;
-  } catch (err) {
-    console.warn(err);
-  }
+export const confirmRegistration = async (email, code) => {
+  const cognitoUser = new CognitoUser({
+    Username: email,
+    Pool: userPool,
+  });
+
+  return new Promise((res, rej) => {
+    cognitoUser.confirmRegistration(code, true, (err, result) => {
+      if (err) {
+        console.warn(err);
+        return rej(err);
+      }
+      console.log('Confirmed registration', result);
+      return res(result);
+    });
+  });
 };
 
-export const auth = async (username, password) => {
-  const authTokens = getCache();
+export const auth = async (email, password) => {
+  const authDetails = new AuthenticationDetails({
+    Username: email,
+    Password: password,
+  });
+  const cognitoUser = new CognitoUser({
+    Username: email,
+    Pool: userPool,
+  });
 
-  if (!authTokens) {
-    if (username && password) {
-      return await newTokens(username, password);
+  return new Promise((res, rej) => {
+    cognitoUser.authenticateUser(authDetails, {
+      async onSuccess(result) {
+        // const accessToken = result.getAccessToken().getJwtToken();
+        const login = `cognito-idp.${region}.amazonaws.com/${userPoolId}`;
+        const configured = await updateAWSConfig(result, login);
+        res(configured);
+      },
+
+      onFailure(err) {
+        console.warn(err);
+        rej(err);
+      },
+    });
+  });
+};
+
+const updateAWSConfig = (authRes, login) => {
+  return new Promise((res, rej) => {
+    AWS.config.region = region;
+
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: identityPoolId,
+      Logins: {
+        [login]: authRes.getIdToken().getJwtToken(),
+      },
+    });
+
+    AWS.config.credentials.refresh((err) => {
+      if (err) {
+        console.warn(err);
+        return rej(err);
+      }
+      res(authRes);
+    });
+  });
+};
+
+export const refreshSession = async (cognitoUser) => {
+  const session = await new Promise((res, rej) => {
+    cognitoUser.getSession((err, session) => {
+      if (err) {
+        console.warn(err);
+        return rej(err);
+      }
+      res(session);
+    });
+  });
+
+  const refreshToken = session.getRefreshToken();
+  return new Promise((res, rej) => {
+    cognitoUser.refreshSession(refreshToken, (err, session) => {
+      if (err) {
+        console.warn(err);
+        return rej(err);
+      }
+
+      const login = `cognito-idp.${region}.amazonaws.com/${userPoolId}`;
+      AWS.config.region = region;
+      AWS.config.credentials.params.Logins[login] = session.getIdToken().getJwtToken();
+
+      AWS.config.credentials.refresh((refreshErr) => {
+        if (refreshErr) {
+          console.warn(refreshErr);
+          return rej(refreshErr);
+        }
+        res(session);
+      });
+    });
+  });
+};
+
+export const getUser = async () => {
+  return new Promise(async (res, rej) => {
+    const cognitoUser = userPool.getCurrentUser();
+    if (!cognitoUser) {
+      return rej('No current user');
     }
-    return;
-  }
 
-  const exp = authTokens.exp - DateTime.now().toSeconds();
-  const fiveMins = 5 * 60;
-  if (exp > fiveMins) {
-    return authTokens;
-  }
-
-  const tokens = await refreshTokens(authTokens.RefreshToken);
-  if (tokens) {
-    return tokens;
-  }
-
-  if (username && password) {
-    return await newTokens(username, password);
-  }
+    res(await getAttributes(cognitoUser));
+  });
 };
 
-export const getUser = async (accessToken) => {
-  try {
-    const user = await cognito
-      .getUser({
-        AccessToken: accessToken,
-      })
-      .promise();
-    return {
-      username: user.Username,
-    };
-  } catch (err) {
-    console.warn(err);
-  }
-};
+export const getAttributes = (cognitoUser) => {
+  return new Promise((res, rej) => {
+    cognitoUser.getUserAttributes((err, result) => {
+      if (err) {
+        console.warn(err);
+        return rej(err);
+      }
 
-const newTokens = async (username, password) => {
-  try {
-    const { AuthenticationResult } = await cognito
-      .initiateAuth({
-        ClientId: clientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
-        AuthParameters: {
-          USERNAME: username,
-          PASSWORD: password,
-        },
-      })
-      .promise();
-    cache(AuthenticationResult);
-    return AuthenticationResult;
-  } catch (err) {
-    console.warn(err);
-  }
-};
-
-const refreshTokens = async (refreshToken) => {
-  try {
-    const { AuthenticationResult } = await cognito
-      .initiateAuth({
-        ClientId: clientId,
-        AuthFlow: 'REFRESH_TOKEN_AUTH',
-        AuthParameters: {
-          REFRESH_TOKEN: refreshToken,
-        },
-      })
-      .promise();
-    cache(AuthenticationResult);
-    return AuthenticationResult;
-  } catch (err) {
-    console.warn(err);
-  }
-};
-
-const cache = (authTokens) => {
-  const authJwt = jwt.sign(authTokens, clientId, { expiresIn: authTokens.ExpiresIn });
-  window.localStorage.setItem('lamb', authJwt);
-};
-
-const getCache = () => {
-  const cookie = window.localStorage.getItem('lamb');
-  return jwt.decode(cookie, clientId);
+      const attributes = result.reduce((obj, attr) => {
+        obj[attr.getName()] = attr.getValue();
+        return obj;
+      }, {});
+      res(attributes);
+    });
+  });
 };
