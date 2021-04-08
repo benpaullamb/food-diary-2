@@ -23,10 +23,10 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/auth.js'],
+  plugins: ['~/plugins/sign-in-persist.js'],
 
   router: {
-    middleware: ['auth'],
+    middleware: ['sign-in-redirect'],
   },
 
   // Auto import components: https://go.nuxtjs.dev/config-components

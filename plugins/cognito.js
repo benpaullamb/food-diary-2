@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 
 AWS.config.update({ region: 'eu-west-1' });
 const cognito = new AWS.CognitoIdentityServiceProvider();
-const clientId = 'ug9st2sqkje5v3reegjj8r6ed';
+const clientId = '536bq7ndl0p9qjh3qjp426lhkf';
 
 export const signUp = async (username, password) => {
   try {
@@ -124,10 +124,10 @@ const refreshTokens = async (refreshToken) => {
 
 const cache = (authTokens) => {
   const authJwt = jwt.sign(authTokens, clientId, { expiresIn: authTokens.ExpiresIn });
-  window.localStorage.setItem('cognito', authJwt);
+  window.localStorage.setItem('lamb', authJwt);
 };
 
 const getCache = () => {
-  const cookie = window.localStorage.getItem('cognito');
+  const cookie = window.localStorage.getItem('lamb');
   return jwt.decode(cookie, clientId);
 };

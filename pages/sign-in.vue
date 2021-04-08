@@ -34,10 +34,6 @@ export default {
 
   methods: {
     async signIn() {
-      if (this.$store.state.user?.username) {
-        return this.$router.push('/');
-      }
-
       const authTokens = await auth(this.username, this.password);
       if (!authTokens) {
         return console.log('Invalid username/password or something went wrong');
