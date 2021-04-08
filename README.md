@@ -6,8 +6,6 @@
 
 A full-stack, upgraded, live version of Food Diary 1.0
 
-Refactor auth, add sign-out, run thru all
-
 ### Built with
 
 - Nuxt.js

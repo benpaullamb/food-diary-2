@@ -7,7 +7,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Food Diary v2.0.0-fs',
+    title: 'Food Diary v2',
     htmlAttrs: {
       lang: 'en',
     },
@@ -23,10 +23,10 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/sign-in-persist.js'],
+  plugins: [],
 
   router: {
-    middleware: ['sign-in-redirect'],
+    middleware: [],
   },
 
   // Auto import components: https://go.nuxtjs.dev/config-components

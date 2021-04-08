@@ -1,20 +1,11 @@
 <template>
   <b-container>
     <h1>Home</h1>
-    <span>{{ username || 'You are not signed in' }}</span>
-    <NuxtLink to="/sign-in">Sign in</NuxtLink>
-    <NuxtLink to="/sign-up">Sign up</NuxtLink>
   </b-container>
 </template>
 
 <script>
-export default {
-  computed: {
-    username() {
-      return this.$store.state.user;
-    },
-  },
-};
+export default {};
 </script>
 
 <style>

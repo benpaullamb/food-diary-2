@@ -1,77 +1,111 @@
 <template>
   <b-container class="pt-5">
-    <h1>Food Diary</h1>
-    <h4>Sign Up</h4>
+    <h1 class="mb-4">Sign-Up</h1>
 
-    <b-row>
-      <b-col sm="6">
-        <b-form v-if="!isPendingVerification">
-          <b-form-group label="Username" label-for="username">
-            <b-form-input id="username" type="text" v-model="username" />
-          </b-form-group>
+    <b-form>
+      <b-form-group label="Name" label-for="name">
+        <b-form-input v-model="name" type="text" :state="validation.name.isValid" id="name"></b-form-input>
+        <b-form-invalid-feedback>{{ validation.name.errors.join('; ') }}</b-form-invalid-feedback>
+      </b-form-group>
 
-          <b-form-group label="Password" label-for="password">
-            <b-form-input id="password" type="password" v-model="password" />
-          </b-form-group>
+      <b-form-group label="Email" label-for="email">
+        <b-form-input v-model="email" type="email" :state="validation.email.isValid" id="email"></b-form-input>
+        <b-form-invalid-feedback>{{ validation.email.errors.join('; ') }}</b-form-invalid-feedback>
+      </b-form-group>
 
-          <b-button @click="signUp">Sign Up</b-button>
-        </b-form>
+      <b-form-group label="Password" label-for="password">
+        <b-form-input
+          v-model="password"
+          type="password"
+          :state="validation.password.isValid"
+          id="password"
+        ></b-form-input>
+        <b-form-invalid-feedback>{{ validation.password.errors.join('; ') }}</b-form-invalid-feedback>
+      </b-form-group>
 
-        <b-form v-if="isPendingVerification">
-          <b-form-group label="Verification code" label-for="code">
-            <b-form-input id="code" type="text" v-model="code" />
-          </b-form-group>
+      <b-form-group label="Confirm Password" label-for="confirm-password">
+        <b-form-input
+          v-model="confirmPassword"
+          type="password"
+          :state="validation.confirmPassword.isValid"
+          id="confirm-password"
+        ></b-form-input>
+        <b-form-invalid-feedback>{{ validation.confirmPassword.errors.join('; ') }}</b-form-invalid-feedback>
+      </b-form-group>
 
-          <b-button @click="verify">Verify</b-button>
-        </b-form>
-      </b-col>
-    </b-row>
+      <b-button @click="signUp">Sign-Up</b-button>
+    </b-form>
   </b-container>
 </template>
 
 <script>
-import { signUp, confirmRegistration, auth } from '~/plugins/cognito';
+import { signUp } from '~/plugins/cognito';
+import formRules from '~/plugins/form-rules';
 
 export default {
   data() {
     return {
-      username: '',
+      name: '',
+      email: '',
       password: '',
-      code: '',
-      isPendingVerification: false,
+      confirmPassword: '',
+      validation: {
+        name: {
+          isValid: null,
+          errors: [],
+        },
+        email: {
+          isValid: null,
+          errors: [],
+        },
+        password: {
+          isValid: null,
+          errors: [],
+        },
+        confirmPassword: {
+          isValid: null,
+          errors: [],
+        },
+      },
     };
   },
   methods: {
     async signUp() {
-      if (!this.username || !this.password) {
+      if (!this.validateForm()) {
         return;
       }
 
-      const res = await signUp(this.username, this.password);
-      console.log('sign-up', res);
-      this.isPendingVerification = true;
+      try {
+        const user = await signUp(this.email, this.password, this.name);
+        console.log('user', user);
+      } catch (err) {
+        console.log(err.message.split('; '));
+      }
     },
 
-    async verify() {
-      if (!this.code) {
-        return;
+    validateForm() {
+      let isValid = true;
+
+      Object.keys(this.validation).forEach((param) => {
+        this.validation[param].errors = [];
+
+        formRules[param]?.forEach((rule) => {
+          if (!rule.test(this[param])) {
+            this.validation[param].errors.push(rule.failMessage);
+            isValid = false;
+          }
+        });
+
+        this.validation[param].isValid = this.validation[param].errors.length === 0;
+      });
+
+      if (this.password !== this.confirmPassword) {
+        this.validation.confirmPassword.isValid = false;
+        this.validation.confirmPassword.errors = ['Must match password'];
+        isValid = false;
       }
 
-      const res = await confirmRegistration(this.username, this.code);
-      console.log('confirm registration', res);
-
-      this.signIn();
-    },
-
-    async signIn() {
-      const authTokens = await auth(this.username, this.password);
-      if (!authTokens) {
-        return console.log('Invalid username/password or something went wrong');
-      }
-
-      const user = await getUser(authTokens.AccessToken);
-      this.$store.commit('setUser', user);
-      this.$router.push('/');
+      return isValid;
     },
   },
 };
