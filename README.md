@@ -66,5 +66,7 @@ TBD
 
 ## Release History
 
+- v0.2.0
+  - Cognito updated to use library
 - v0.1.0
   - Cognito user pool setup

@@ -1,46 +1,34 @@
 <template>
-  <b-container class="pt-5">
-    <h1 class="mb-4">Sign-Up</h1>
+  <b-container class="pt-2 pt-sm-4">
+    <h1 class="mb-4">Lamb Sign-Up</h1>
 
     <b-form>
       <b-form-group label="Name" label-for="name">
-        <b-form-input v-model="name" type="text" :state="validation.name.isValid" id="name"></b-form-input>
-        <b-form-invalid-feedback>{{ validation.name.errors.join('; ') }}</b-form-invalid-feedback>
+        <b-form-input v-model="name" type="text" id="name"></b-form-input>
       </b-form-group>
 
       <b-form-group label="Email" label-for="email">
-        <b-form-input v-model="email" type="email" :state="validation.email.isValid" id="email"></b-form-input>
-        <b-form-invalid-feedback>{{ validation.email.errors.join('; ') }}</b-form-invalid-feedback>
+        <b-form-input v-model="email" type="email" id="email"></b-form-input>
       </b-form-group>
 
       <b-form-group label="Password" label-for="password">
-        <b-form-input
-          v-model="password"
-          type="password"
-          :state="validation.password.isValid"
-          id="password"
-        ></b-form-input>
-        <b-form-invalid-feedback>{{ validation.password.errors.join('; ') }}</b-form-invalid-feedback>
+        <b-form-input v-model="password" type="password" id="password"></b-form-input>
       </b-form-group>
 
       <b-form-group label="Confirm Password" label-for="confirm-password">
-        <b-form-input
-          v-model="confirmPassword"
-          type="password"
-          :state="validation.confirmPassword.isValid"
-          id="confirm-password"
-        ></b-form-input>
-        <b-form-invalid-feedback>{{ validation.confirmPassword.errors.join('; ') }}</b-form-invalid-feedback>
+        <b-form-input v-model="confirmPassword" type="password" id="confirm-password"></b-form-input>
       </b-form-group>
 
-      <b-button @click="signUp">Sign-Up</b-button>
+      <div class="d-flex align-items-center">
+        <b-button @click="signUp">Sign-Up</b-button>
+        <NuxtLink to="/verify" class="ml-3">or verify your account</NuxtLink>
+      </div>
     </b-form>
   </b-container>
 </template>
 
 <script>
 import { signUp } from '~/plugins/cognito';
-import formRules from '~/plugins/form-rules';
 
 export default {
   data() {
@@ -49,63 +37,44 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
-      validation: {
-        name: {
-          isValid: null,
-          errors: [],
-        },
-        email: {
-          isValid: null,
-          errors: [],
-        },
-        password: {
-          isValid: null,
-          errors: [],
-        },
-        confirmPassword: {
-          isValid: null,
-          errors: [],
-        },
-      },
     };
   },
+
   methods: {
     async signUp() {
       if (!this.validateForm()) {
-        return;
+        return this.errorToast('Invalid details');
       }
 
       try {
         const user = await signUp(this.email, this.password, this.name);
-        console.log('user', user);
+        if (user) {
+          this.$router.push({ path: 'verify', query: { email: this.email } });
+        }
       } catch (err) {
-        console.log(err.message.split('; '));
+        this.errorToast(err.message);
       }
     },
 
     validateForm() {
-      let isValid = true;
+      const validName = this.name.length >= 1;
+      const validEmail = this.email.match(/\w+@\w+/gi);
+      const validPassword = this.validatePassword(this.password);
+      const validConfirmPass = this.validatePassword(this.confirmPassword) && this.password === this.confirmPassword;
+      return validName && validEmail && validPassword && validConfirmPass;
+    },
 
-      Object.keys(this.validation).forEach((param) => {
-        this.validation[param].errors = [];
+    validatePassword(password) {
+      return password.length >= 8 && password.match(/[A-Z]/g) && password.match(/[a-z]/g) && password.match(/\d/gi);
+    },
 
-        formRules[param]?.forEach((rule) => {
-          if (!rule.test(this[param])) {
-            this.validation[param].errors.push(rule.failMessage);
-            isValid = false;
-          }
-        });
-
-        this.validation[param].isValid = this.validation[param].errors.length === 0;
+    errorToast(message) {
+      this.$bvToast.toast(message, {
+        title: 'Lamb Sign-Up',
+        appendToast: true,
+        variant: 'danger',
+        toaster: 'b-toaster-bottom-center',
       });
-
-      if (this.password !== this.confirmPassword) {
-        this.validation.confirmPassword.isValid = false;
-        this.validation.confirmPassword.errors = ['Must match password'];
-        isValid = false;
-      }
-
-      return isValid;
     },
   },
 };
