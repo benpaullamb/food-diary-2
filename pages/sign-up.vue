@@ -1,29 +1,31 @@
 <template>
-  <b-container class="pt-2 pt-sm-4">
-    <h1 class="mb-4">Lamb Sign-Up</h1>
+  <b-container class="pt-2 pt-sm-5 d-sm-flex justify-content-center">
+    <b-card class="sign-up">
+      <h1 class="mb-4">Lamb Sign-Up</h1>
 
-    <b-form>
-      <b-form-group label="Name" label-for="name">
-        <b-form-input v-model="name" type="text" id="name"></b-form-input>
-      </b-form-group>
+      <b-form>
+        <b-form-group label="Name" label-for="name">
+          <b-form-input v-model="name" type="text" id="name"></b-form-input>
+        </b-form-group>
 
-      <b-form-group label="Email" label-for="email">
-        <b-form-input v-model="email" type="email" id="email"></b-form-input>
-      </b-form-group>
+        <b-form-group label="Email" label-for="email">
+          <b-form-input v-model="email" type="email" id="email"></b-form-input>
+        </b-form-group>
 
-      <b-form-group label="Password" label-for="password">
-        <b-form-input v-model="password" type="password" id="password"></b-form-input>
-      </b-form-group>
+        <b-form-group label="Password" label-for="password">
+          <b-form-input v-model="password" type="password" id="password"></b-form-input>
+        </b-form-group>
 
-      <b-form-group label="Confirm Password" label-for="confirm-password">
-        <b-form-input v-model="confirmPassword" type="password" id="confirm-password"></b-form-input>
-      </b-form-group>
+        <b-form-group label="Confirm Password" label-for="confirm-password">
+          <b-form-input v-model="confirmPassword" type="password" id="confirm-password"></b-form-input>
+        </b-form-group>
 
-      <div class="d-flex align-items-center">
-        <b-button @click="signUp">Sign-Up</b-button>
-        <NuxtLink to="/verify" class="ml-3">or verify your account</NuxtLink>
-      </div>
-    </b-form>
+        <div class="d-flex align-items-center">
+          <b-button variant="primary" @click="signUp">Sign-Up</b-button>
+          <NuxtLink to="/verify" class="ml-3">or verify your account</NuxtLink>
+        </div>
+      </b-form>
+    </b-card>
   </b-container>
 </template>
 
@@ -80,4 +82,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.sign-up {
+  min-width: 50%;
+}
+</style>

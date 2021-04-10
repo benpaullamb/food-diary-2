@@ -6,13 +6,15 @@
 
 A full-stack, upgraded, live version of Food Diary 1.0
 
+Replace email with identity ID in Dynamo
+
 ### Built with
 
 - Nuxt.js
 - BootstrapVue
 - AWS Cognito
-- AWS Dynamo
 - AWS Lambda
+- AWS Dynamo
 
 ## Getting Started
 
@@ -60,12 +62,14 @@ TBD
 
 ## Roadmap
 
-- [ ] Lamb Sign-in System (AWS Cognito)
+- [x] Lamb Sign-in System (AWS Cognito)
+- [x] Store food diary in Dynamo (via Lambda)
 - [ ] Paste OCR ingredients text which is then separated
-- [ ] Store food diary in Dynamo (via Lambda?)
 
 ## Release History
 
+- v0.3.0
+  - Serverless Lambdas with Dynamo for CRUD food diaries
 - v0.2.0
   - Cognito updated to use library
 - v0.1.0

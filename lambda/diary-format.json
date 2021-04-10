@@ -1,0 +1,38 @@
+{
+  "email": "string",
+  "entries": [
+    {
+      "date": "iso",
+      "events": [
+        {
+          "name": "string",
+          "type": "food|medication|stress|exercise",
+          "time": "iso",
+          "ingredients": ["string"],
+          "intensity": "number"
+        }
+      ],
+      "outcomes": {
+        "symptoms": {
+          "nausea": "number",
+          "diarrhea": "number",
+          "stomachPain": "number",
+          "bloating": "number",
+          "gas": "number",
+          "constipation": "number"
+        },
+        "bowelMovements": [
+          {
+            "type": "number",
+            "time": "iso"
+          }
+        ],
+        "sleep": {
+          "start": "iso",
+          "end": "iso",
+          "duration": "number"
+        }
+      }
+    }
+  ]
+}
