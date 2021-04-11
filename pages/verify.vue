@@ -1,21 +1,23 @@
 <template>
-  <b-container class="pt-2 pt-sm-4">
-    <h1 class="mb-4">Lamb Verify</h1>
+  <b-container class="pt-2 pt-sm-5 d-sm-flex justify-content-center">
+    <b-card class="sign-up">
+      <h1 class="mb-4">Lamb Verify</h1>
 
-    <b-form>
-      <b-form-group label="Email" label-for="email">
-        <b-form-input v-model="email" type="email" id="email"></b-form-input>
-      </b-form-group>
+      <b-form>
+        <b-form-group label="Email" label-for="email">
+          <b-form-input v-model="email" type="email" id="email"></b-form-input>
+        </b-form-group>
 
-      <b-form-group label="Verification Code" label-for="code">
-        <b-form-input v-model="code" type="text" id="code"></b-form-input>
-      </b-form-group>
+        <b-form-group label="Verification Code" label-for="code">
+          <b-form-input v-model="code" type="text" id="code"></b-form-input>
+        </b-form-group>
 
-      <div class="d-flex align-items-center">
-        <b-button @click="verify">Verify</b-button>
-        <a @click="resendCode" class="ml-3 resend-code">or resend your verification code</a>
-      </div>
-    </b-form>
+        <div class="d-flex align-items-center">
+          <b-button @click="verify">Verify</b-button>
+          <a @click="resendCode" class="ml-3 resend-code">or resend your verification code</a>
+        </div>
+      </b-form>
+    </b-card>
   </b-container>
 </template>
 
@@ -74,5 +76,9 @@ export default {
 <style>
 .resend-code:hover {
   cursor: pointer;
+}
+
+.sign-up {
+  min-width: 50%;
 }
 </style>

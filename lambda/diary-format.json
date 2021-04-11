@@ -3,16 +3,16 @@
   "entries": [
     {
       "date": "iso",
-      "events": [
+      "inputs": [
         {
           "name": "string",
-          "type": "food|medication|stress|exercise",
           "time": "iso",
+          "type": "food|medication|stress|exercise",
           "ingredients": ["string"],
           "intensity": "number"
         }
       ],
-      "outcomes": {
+      "outputs": {
         "symptoms": {
           "nausea": "number",
           "diarrhea": "number",

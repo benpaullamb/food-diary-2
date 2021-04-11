@@ -60,9 +60,9 @@ TBD
 
 ## Roadmap
 
-- [ ] Re-create user pool and identity in London region (from eu-west-1/Ireland)
 - [ ] Replace email with identity ID in Dynamo
 - [ ] Paste OCR ingredients text which is then separated
+- [x] Re-create user pool and identity in London region (from eu-west-1/Ireland)
 - [x] Lamb Sign-in System (AWS Cognito)
 - [x] Store food diary in Dynamo (via Lambda)
 
