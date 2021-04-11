@@ -10,9 +10,9 @@ A full-stack, upgraded, live version of Food Diary 1.0
 
 - Nuxt.js
 - BootstrapVue
-- AWS Cognito
+- Amazon Cognito
 - AWS Lambda
-- AWS Dynamo
+- Amazon DynamoDB
 
 ## Getting Started
 
