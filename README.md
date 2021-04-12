@@ -60,7 +60,7 @@ TBD
 
 ## Roadmap
 
-- [ ] Replace email with the `sub` (subject unique ID) of the user's ID token, [first verifying the ID JWT](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html)
+- [ ] Replace email with the `sub` (subject unique ID) of the user's ID token, [first verifying the ID JWT](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html) (maybe storing the `userPoolId` in SSM param store)
 - [ ] Paste OCR ingredients text which is then separated
 - [ ] Account page with delete account/data option, change password or name
 - [x] Re-create user pool and identity in London region (from eu-west-1/Ireland)
