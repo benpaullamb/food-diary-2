@@ -60,11 +60,12 @@ TBD
 
 ## Roadmap
 
+- [ ] Add permissions to user accounts to call Lambda
 - [ ] Replace email with identity ID in Dynamo
 - [ ] Paste OCR ingredients text which is then separated
 - [ ] Account page with delete account/data option, change password or name
 - [x] Re-create user pool and identity in London region (from eu-west-1/Ireland)
-- [x] Lamb Sign-in System (AWS Cognito)
+- [x] Lamb Accounts (Amazon Cognito)
 - [x] Store food diary in Dynamo (via Lambda)
 
 ## Release History
