@@ -1,6 +1,6 @@
 # Food Diary 2.0
 
-![status: in progress](https://img.shields.io/badge/status-in--progress-green)
+![status: dropped](https://img.shields.io/badge/status-dropped-inactive)
 
 ## About this Project
 
